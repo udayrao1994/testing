@@ -4,18 +4,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LevelScreen from './LevelScreen';
 import QuizData from '../../data/QuizData';
 
+jest.mock('@expo/vector-icons', () => {
+  const React = require('react');
+  const { Text } = require('react-native');
+  return {
+    Ionicons: ({ name }) => <Text>{name}</Text>,
+  };
+});
+
+
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(() => Promise.resolve('2')), // Mock unlocked level
   setItem: jest.fn(),
 }));
 
-// Suppress native driver warnings
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+// // Suppress native driver warnings
+// jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-// Mock vector icons
-jest.mock('@expo/vector-icons', () => ({
-  Ionicons: ({ name }) => <Text>{name}</Text>,
-}));
+
 
 // Mock react-native-animatable
 jest.mock('react-native-animatable', () => {
