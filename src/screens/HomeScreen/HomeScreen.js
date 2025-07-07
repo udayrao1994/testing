@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./HomeScreen.styles";
+import styles, { gradientOrange } from "./HomeScreen.styles";
+import { QuizRepository } from "../../data/repositories/QuizRepository";
+import theme from '../../theme/theme';
+
+
+const repo = new QuizRepository();
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
@@ -21,15 +25,7 @@ export default function HomeScreen({ route }) {
   const progress = useRef(new Animated.Value(0)).current;
   const [timeLeft, setTimeLeft] = useState(10);
 
-  if (!questions || !Array.isArray(questions) || questions.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No questions available.</Text>
-      </View>
-    );
-  }
-
-  const currentQ = questions[currentIndex];
+  const currentQ = questions?.[currentIndex];
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -41,6 +37,11 @@ export default function HomeScreen({ route }) {
   }, [timeLeft]);
 
   useEffect(() => setTimeLeft(10), [currentIndex]);
+
+  const restart = useCallback(() => {
+    setCurrentIndex(0);
+    setAnswers([]);
+  }, []);
 
   const goNext = () => {
     const next = currentIndex + 1;
@@ -54,39 +55,19 @@ export default function HomeScreen({ route }) {
     }
   };
 
-  const unlockNextLevel = async () => {
-    try {
-      const storedLevel = await AsyncStorage.getItem("unlockedLevel");
-      const unlocked = storedLevel ? parseInt(storedLevel, 10) : 1;
-      if (level === unlocked) {
-        await AsyncStorage.setItem("unlockedLevel", (unlocked + 1).toString());
-      }
-    } catch (err) {
-      console.error("Failed to update unlocked level", err);
-    }
-  };
-
   const handleSubmit = async () => {
-    const userAnswer = input.trim();
-    if (!userAnswer) return;
-
-    const updatedAnswers = [
-      ...answers,
-      { questionIndex: currentIndex, userAnswer },
-    ];
+    if (!input.trim()) return;
+    const updatedAnswers = [...answers, { questionIndex: currentIndex, userAnswer: input.trim() }];
     setAnswers(updatedAnswers);
     setInput("");
 
     if (currentIndex === questions.length - 1) {
-      await unlockNextLevel();
+      await repo.unlockLevelIfNeeded(level);
       navigation.navigate("History", {
         answers: updatedAnswers,
         questions,
         level,
-        restart: () => {
-          setCurrentIndex(0);
-          setAnswers([]);
-        },
+        restart,
       });
     } else {
       goNext();
@@ -94,56 +75,56 @@ export default function HomeScreen({ route }) {
   };
 
   const handleSkip = async () => {
-    const updatedAnswers = [
-      ...answers,
-      { questionIndex: currentIndex, userAnswer: null },
-    ];
+    const updatedAnswers = [...answers, { questionIndex: currentIndex, userAnswer: null }];
     setAnswers(updatedAnswers);
     setInput("");
 
     if (currentIndex === questions.length - 1) {
-      await unlockNextLevel();
+      await repo.unlockLevelIfNeeded(level);
       navigation.navigate("History", {
         answers: updatedAnswers,
         questions,
         level,
-        restart: () => {
-          setCurrentIndex(0);
-          setAnswers([]);
-        },
+        restart,
       });
     } else {
       goNext();
     }
   };
 
+  const handleKeyPress = (val) => setInput((prev) => prev + val);
+  const handleBackspace = () => setInput((prev) => prev.slice(0, -1));
+
   const progressInterpolate = progress.interpolate({
     inputRange: [0, questions.length],
     outputRange: ["0%", "100%"],
   });
 
-  const handleKeyPress = (value) => {
-    setInput((prev) => prev + value);
-  };
-
-  const handleBackspace = () => {
-    setInput((prev) => prev.slice(0, -1));
-  };
+  if (!questions || questions.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No questions available.</Text>
+      </View>
+    );
+  }
 
   return (
-    <LinearGradient colors={['#3B82F6', '#2563EB']} style={{ flex: 1 }}>
-      {/* Header */}
-      <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.header}>
+    <View style={[styles.header, { backgroundColor: theme.colors.primaryBlue }]}>
+
+      <LinearGradient colors={theme.colors.gradientBlue} style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerText}>Level : {level}</Text>
-          <Text style={styles.headerText}>{currentIndex + 1}/{questions.length}</Text>
+          <Text style={styles.headerText}>Level: {level}</Text>
+          <Text style={styles.headerText}>
+            {currentIndex + 1}/{questions.length}
+          </Text>
           <Text style={styles.headerText}>⏳ {String(timeLeft).padStart(2, "0")}</Text>
         </View>
       </LinearGradient>
 
-      {/* Progress Bar */}
       <View style={styles.progressContainer}>
-        <Animated.View style={[styles.progressBar, { width: progressInterpolate }]} />
+        <Animated.View
+          style={[styles.progressBar, { width: progressInterpolate }]}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -158,29 +139,30 @@ export default function HomeScreen({ route }) {
             <Text style={styles.inputText}>{input || " "}</Text>
           </View>
 
-          {/* Keypad */}
           <View style={styles.keypadContainer}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num, idx) => (
-              <TouchableOpacity key={idx} onPress={() => handleKeyPress(num.toString())} style={styles.keypadButton}>
-                <Text style={styles.keypadText}>{num}</Text>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n) => (
+              <TouchableOpacity
+                key={n}
+                onPress={() => handleKeyPress(n.toString())}
+                style={styles.keypadButton}
+              >
+                <Text style={styles.keypadText}>{n}</Text>
               </TouchableOpacity>
             ))}
-
             <TouchableOpacity onPress={handleBackspace} style={styles.backspaceButton}>
               <Text style={styles.backspaceText}>⌫ Backspace</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Action Buttons */}
           <View style={styles.actionRow}>
-            <LinearGradient colors={['#fb923c', '#f97316']} style={styles.actionButton}>
+            <LinearGradient colors={gradientOrange} style={styles.actionButton}>
               <TouchableOpacity onPress={handleSkip} style={styles.fullWidthCenter}>
                 <Text style={styles.actionText}>Skip</Text>
               </TouchableOpacity>
             </LinearGradient>
 
             <TouchableOpacity onPress={handleSubmit} style={styles.flexOne}>
-              <LinearGradient colors={['#fb923c', '#f97316']} style={styles.actionButton}>
+              <LinearGradient colors={gradientOrange} style={styles.actionButton}>
                 <Text style={styles.actionText}>
                   {currentIndex < questions.length - 1 ? "Save" : "Submit"}
                 </Text>
@@ -192,11 +174,11 @@ export default function HomeScreen({ route }) {
 
       <View style={styles.backContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <LinearGradient colors={['#fb923c', '#f97316']} style={styles.backButton}>
+          <LinearGradient colors={gradientOrange} style={styles.backButton}>
             <Text style={styles.backText}>⬅ Back to Levels</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 }

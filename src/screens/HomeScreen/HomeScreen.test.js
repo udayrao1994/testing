@@ -1,67 +1,44 @@
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import HomeScreen from '../HomeScreen'; // Update this path as per your structure
-import { NavigationContainer } from '@react-navigation/native';
-import { act } from 'react-test-renderer';
+import React from "react";
+import { render, fireEvent, waitFor } from "@testing-library/react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import HomeScreen from "./HomeScreen";
 
-// ✅ Mock AsyncStorage if used
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  setItem: jest.fn(),
-  getItem: jest.fn(),
-  removeItem: jest.fn(),
-}));
+jest.mock("react-native-reanimated", () =>
+  require("react-native-reanimated/mock")
+);
 
-// ✅ Mock vector icons
-jest.mock('@expo/vector-icons', () => {
-  const React = require('react');
-  const { Text } = require('react-native');
-  return {
-    Ionicons: ({ name }) => React.createElement(Text, null, name),
-  };
-});
-
-// ✅ Helper to wrap screen with NavigationContainer
-const renderWithNavigation = () => {
-  return render(
-    <NavigationContainer>
-      <HomeScreen />
-    </NavigationContainer>
-  );
+const mockRoute = {
+  params: {
+    questions: [
+      { question: "1 + 1", answer: "2" },
+      { question: "2 + 2", answer: "4" },
+    ],
+    level: 1,
+  },
 };
 
-describe('HomeScreen', () => {
-  it('renders the question and allows correct answer submission', async () => {
-    const { getByText, getByPlaceholderText } = renderWithNavigation();
+const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 
-    // wait for the input field to appear
-    const input = await waitFor(() => getByPlaceholderText('Enter your answer'));
+describe("HomeScreen", () => {
+  it("submits correct answer and renders next question", async () => {
+    const { getByText, getByTestId } = render(
+      <NavigationContainer>
+        <HomeScreen route={mockRoute} navigation={mockNavigation} />
+      </NavigationContainer>
+    );
 
-    // ✅ Type the answer
-    await act(async () => {
-      fireEvent.changeText(input, '4');
-      fireEvent.press(getByText('Submit')); // Update to 'Save' if that’s your actual button
-    });
+    // Tap '2' on keypad
+    fireEvent.press(getByText("2"));
 
-    // ✅ Add some expectation if needed
+    // Confirm input is updated
+    expect(getByTestId("answer-display").props.children).toBe("2");
+
+    // Tap Save/Submit button
+    fireEvent.press(getByText("Save"));
+
+    // Wait for next question to appear
     await waitFor(() => {
-      expect(getByText(/Level/i)).toBeTruthy(); // or success message
-    });
-  });
-
-  it('renders all number keys', async () => {
-    const { getByText } = renderWithNavigation();
-
-    await waitFor(() => {
-      expect(getByText('1')).toBeTruthy();
-      expect(getByText('2')).toBeTruthy();
-      expect(getByText('3')).toBeTruthy();
-      expect(getByText('4')).toBeTruthy();
-      expect(getByText('5')).toBeTruthy();
-      expect(getByText('6')).toBeTruthy();
-      expect(getByText('7')).toBeTruthy();
-      expect(getByText('8')).toBeTruthy();
-      expect(getByText('9')).toBeTruthy();
-      expect(getByText('0')).toBeTruthy();
+      expect(getByText("2 + 2")).toBeTruthy();
     });
   });
 });

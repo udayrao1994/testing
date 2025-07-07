@@ -4,8 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styles } from './LeaderboardScreen.styles';
+import { styles, gradients } from './LeaderboardScreen.styles';
+import { QuizRepository } from '../../data/repositories/QuizRepository';
+import theme from '../../theme/theme';
+
+const repo = new QuizRepository();
 
 export default function LeaderboardScreen() {
   const [levelScores, setLevelScores] = useState([]);
@@ -13,11 +16,9 @@ export default function LeaderboardScreen() {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const stored = await AsyncStorage.getItem('quizHistory');
-        const parsed = stored ? JSON.parse(stored) : [];
+        const parsed = await repo.getHistory();
         const uniqueLevels = {};
 
-        // Keep only the highest score per level
         parsed.forEach(entry => {
           if (
             !uniqueLevels[entry.level] ||
@@ -38,7 +39,8 @@ export default function LeaderboardScreen() {
   }, []);
 
   return (
-    <LinearGradient colors={['#3B82F6', '#2563EB']} style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
+    
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -55,7 +57,7 @@ export default function LeaderboardScreen() {
             style={styles.cardWrapper}
           >
             <LinearGradient
-              colors={['#e0f2fe', '#bae6fd']}
+              colors={gradients.card}
               style={styles.levelCard}
             >
               <View style={styles.levelInfo}>
@@ -70,6 +72,6 @@ export default function LeaderboardScreen() {
           </Animatable.View>
         ))}
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }

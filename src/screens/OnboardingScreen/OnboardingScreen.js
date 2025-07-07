@@ -8,9 +8,11 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from './OnboardingScreen.styles';
+import theme from '../../theme/theme';
+
 
 const { width } = Dimensions.get('window');
-const welcomeLogo = require('../../../assets/tiny-people-sitting-standing-near-giant-faq.png')
+const welcomeLogo = require('../../../assets/tiny-people-sitting-standing-near-giant-faq.png');
 
 const OnboardingScreen = ({ navigation }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -47,7 +49,8 @@ const OnboardingScreen = ({ navigation }) => {
   const current = onboardingSlides[currentSlide];
 
   return (
-    <LinearGradient colors={['#3B82F6', '#2563eb']} style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
+    
       <View style={styles.header}>
         <Image source={welcomeLogo} style={styles.image} />
       </View>
@@ -62,7 +65,7 @@ const OnboardingScreen = ({ navigation }) => {
               key={index}
               style={[
                 styles.dot,
-                { color: index === currentSlide ? '#f97316' : '#ccc' },
+                index === currentSlide ? styles.dotActive : styles.dotInactive,
               ]}
             >
               ●
@@ -82,7 +85,7 @@ const OnboardingScreen = ({ navigation }) => {
           </TouchableOpacity>
         )}
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 

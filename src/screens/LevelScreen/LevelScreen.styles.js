@@ -1,10 +1,10 @@
-// features/LevelScreen/LevelScreen.styles.js
 import { StyleSheet } from 'react-native';
+import theme from '../../theme/theme';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2563eb',
+    backgroundColor: theme.colors.primaryBlue,
     paddingTop: 50,
   },
   title: {
@@ -40,3 +40,7 @@ const styles = StyleSheet.create({
 });
 
 export default styles;
+
+export const gradients = {
+  questionbox: ['#ECECFF', '#D6D6FF'],
+};

@@ -1,6 +1,11 @@
-// features/HistoryScreen/HistoryScreen.styles.js
+import { StyleSheet, Platform } from "react-native";
 
-import { StyleSheet, Dimensions, Platform } from "react-native";
+    export const gradients = {
+      container: ["#3B82F6", "#2563EB"],
+      levelCard: ["#fcd34d", "#fbbf24"],
+      scoreBox: ["#34d399", "#10b981"],
+      resultCard: ["#e0f2fe", "#bae6fd"],
+    };
 
 export const styles = StyleSheet.create({
   container: {
@@ -24,114 +29,103 @@ export const styles = StyleSheet.create({
   },
   levelCard: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   levelCardInner: {
-    width: "100%",
-    height: 70,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#facc15",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
   },
   levelLabel: {
-    fontSize: 30,
+    fontSize: 20,
+    fontWeight: "bold",
     color: "#92400e",
-    fontWeight: "600",
-    marginBottom: 4,
   },
   scoreContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   scoreBox: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    justifyContent: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 28,
+    borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#1d4ed8",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
   scoreLabel: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    color: "#065f46",
+    fontWeight: "bold",
     marginBottom: 4,
   },
   scoreValue: {
-    color: "#fff",
     fontSize: 24,
     fontWeight: "bold",
+    color: "#065f46",
   },
   resultList: {
+    marginTop: 10,
     marginBottom: 20,
   },
   resultCard: {
     flexDirection: "row",
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: "center",
-    padding: 16,
-    borderRadius: 20,
-    backgroundColor: "#ffffffcc",
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    justifyContent: "space-between",
   },
   questionText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#1f2937",
+    fontSize: 16,
+    fontWeight: "bold",
     marginBottom: 4,
+    color: "#1e3a8a",
   },
   answerText: {
-    fontSize: 13,
-    color: "#4b5563",
+    fontSize: 14,
+    color: "#334155",
+  },
+  icon: {
+    marginLeft: 10,
   },
   leaderboardButton: {
-    backgroundColor: "#f59e0b",
+    marginTop: 16,
+    backgroundColor: "#2563eb",
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-    shadowColor: "#f59e0b",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5,
   },
   leaderboardButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-    letterSpacing: 0.5,
   },
   retryButton: {
+    marginTop: 12,
     backgroundColor: "#f97316",
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-    shadowColor: "#f97316",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5,
   },
   retryButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-    letterSpacing: 0.5,
   },
+  correctBorder: {
+    borderColor: "#22c55e",
+    borderWidth: 2,
+  },
+  incorrectBorder: {
+    borderColor: "#ef4444",
+    borderWidth: 2,
+  },
+  
+});
+
+// Helper function for AntDesign icon props
+export const getIconStyle = (correct) => ({
+  name: correct ? "checkcircle" : "closecircle",
+  size: 24,
+  color: correct ? "#22c55e" : "#ef4444",
 });

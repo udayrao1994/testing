@@ -11,14 +11,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import QuizData from '../../data/QuizData';
+import { QuizRepository } from '../../data/repositories/QuizRepository';
 import styles from './LevelScreen.styles';
 
 const LevelScreen = ({ navigation }) => {
   const [unlockedLevel, setUnlockedLevel] = useState(1);
   const [cardSize, setCardSize] = useState(150);
   const [numColumns, setNumColumns] = useState(2);
+  const [quizLevels, setQuizLevels] = useState([]);
 
+  // Handle responsive card layout
   useEffect(() => {
     const updateLayout = () => {
       const { width } = Dimensions.get('window');
@@ -38,20 +40,30 @@ const LevelScreen = ({ navigation }) => {
     return () => subscription?.remove();
   }, []);
 
+  // Load unlocked level and level data
   useEffect(() => {
-    const loadUnlockedLevel = async () => {
+    const loadData = async () => {
       try {
         const savedLevel = await AsyncStorage.getItem('unlockedLevel');
         if (savedLevel) {
           setUnlockedLevel(Number(savedLevel));
         }
+
+        const repo = new QuizRepository();
+        const data = await repo.getAllLevelsWithQuestions();
+console.log('Loaded quiz levels:', data); // ✅ Add this to debug
+setQuizLevels(data);
+
+
+        // const data = await repo.getAllLevelsWithQuestions();
+        // setQuizLevels(data);
       } catch (error) {
-        console.error('Failed to load unlocked level:', error);
+        console.error('Error loading level data:', error);
       }
     };
 
-    const unsubscribe = navigation.addListener('focus', loadUnlockedLevel);
-    loadUnlockedLevel();
+    const unsubscribe = navigation.addListener('focus', loadData);
+    loadData();
 
     return unsubscribe;
   }, [navigation]);
@@ -118,7 +130,7 @@ const LevelScreen = ({ navigation }) => {
       </Animatable.Text>
 
       <FlatList
-        data={QuizData}
+        data={quizLevels}
         keyExtractor={(item) => item.level.toString()}
         renderItem={renderLevelCard}
         numColumns={numColumns}

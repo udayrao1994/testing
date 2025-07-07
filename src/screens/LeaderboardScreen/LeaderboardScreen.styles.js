@@ -2,6 +2,11 @@
 
 import { StyleSheet, Platform } from 'react-native';
 
+export const gradients = {
+  container: ['#3B82F6', '#2563EB'], // Background
+  card: ['#e0f2fe', '#bae6fd'],     // Card background
+};
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -27,7 +32,6 @@ export const styles = StyleSheet.create({
   },
   levelCard: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 24,

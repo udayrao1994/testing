@@ -1,11 +1,16 @@
+// HomeScreen.styles.js or QuizScreen.styles.js
 import { StyleSheet } from "react-native";
+import theme from '../../theme/theme';
 
-export default StyleSheet.create({
+export const gradientOrange = ["#fb923c", "#f97316"];
+
+const styles = StyleSheet.create({
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#2563eb",
+    backgroundColor: theme.colors.gradientBlue
+    ,
   },
   emptyText: {
     color: "#fff",
@@ -147,3 +152,5 @@ export default StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export default styles;

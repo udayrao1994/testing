@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native';
+import theme from '../../theme/theme';
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#2563eb',
+    backgroundColor: theme.colors.primaryBlue,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-  },
+ },
   card: {
     width: '100%',
     maxWidth: 380,

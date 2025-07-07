@@ -1,6 +1,4 @@
-// features/HistoryScreen/HistoryScreen.js
-
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -12,8 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { styles } from "./HistoryScreen.styles";
-
+import { styles, gradients, getIconStyle } from "./HistoryScreen.styles";
+import theme from '../../theme/theme';
 export default function HistoryScreen({ route }) {
   const navigation = useNavigation();
   const { questions, answers, level } = route.params;
@@ -45,7 +43,11 @@ export default function HistoryScreen({ route }) {
   };
 
   return (
-    <LinearGradient colors={["#3B82F6", "#2563EB"]} style={styles.container}>
+
+
+    <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
+    
+    
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -55,13 +57,13 @@ export default function HistoryScreen({ route }) {
         </Animatable.View>
 
         <Animatable.View animation="zoomIn" delay={200} style={styles.levelCard}>
-          <LinearGradient colors={["#fef3c7", "#fcd34d"]} style={styles.levelCardInner}>
+          <LinearGradient colors={gradients.levelCard} style={styles.levelCardInner}>
             <Text style={styles.levelLabel}>LEVEL : {level}</Text>
           </LinearGradient>
         </Animatable.View>
 
         <Animatable.View animation="zoomIn" delay={300} style={styles.scoreContainer}>
-          <LinearGradient colors={["#1d4ed8", "#2563eb"]} style={styles.scoreBox}>
+          <LinearGradient colors={gradients.scoreBox} style={styles.scoreBox}>
             <Text style={styles.scoreLabel}>Your Score</Text>
             <Text style={styles.scoreValue}>
               {score}/{questions.length}
@@ -74,6 +76,7 @@ export default function HistoryScreen({ route }) {
             const answered = answers.find((a) => a.questionIndex === idx);
             const userAnswer = answered?.userAnswer;
             const correct = userAnswer === q.answer;
+            const iconProps = getIconStyle(correct);
 
             return (
               <Animatable.View
@@ -83,14 +86,12 @@ export default function HistoryScreen({ route }) {
                 style={{ borderRadius: 20, marginBottom: 12 }}
               >
                 <LinearGradient
-                  colors={["#e0ecff", "#c3dafc"]}
+                  colors={gradients.resultCard}
                   style={[
                     styles.resultCard,
-                    {
-                      borderColor: correct ? "#22c55e" : "#ef4444",
-                      borderWidth: 2,
-                    },
+                    correct ? styles.correctBorder : styles.incorrectBorder,
                   ]}
+                  
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.questionText}>
@@ -104,10 +105,10 @@ export default function HistoryScreen({ route }) {
                     </Text>
                   </View>
                   <AntDesign
-                    name={correct ? "checkcircle" : "closecircle"}
-                    size={24}
-                    color={correct ? "#22c55e" : "#ef4444"}
-                    style={{ marginLeft: 10 }}
+                    name={iconProps.name}
+                    size={iconProps.size}
+                    color={iconProps.color}
+                    style={styles.icon}
                   />
                 </LinearGradient>
               </Animatable.View>
@@ -126,6 +127,6 @@ export default function HistoryScreen({ route }) {
           <Text style={styles.retryButtonText}>🔁 Retry Quiz</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
