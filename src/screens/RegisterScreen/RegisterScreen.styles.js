@@ -1,14 +1,13 @@
 import { StyleSheet } from 'react-native';
-import theme from '../../theme/theme';
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: theme.colors.primaryBlue,
+    backgroundColor: '#2563eb',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
- },
+  },
   card: {
     width: '100%',
     maxWidth: 380,
@@ -40,13 +39,6 @@ const styles = StyleSheet.create({
   subtitle: {
     color: '#4b5563',
     marginBottom: 24,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
   },
   button: {
     backgroundColor: '#f97316',

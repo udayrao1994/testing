@@ -1,11 +1,11 @@
 import { StyleSheet, Platform } from "react-native";
 
-    export const gradients = {
-      container: ["#3B82F6", "#2563EB"],
-      levelCard: ["#fcd34d", "#fbbf24"],
-      scoreBox: ["#34d399", "#10b981"],
-      resultCard: ["#e0f2fe", "#bae6fd"],
-    };
+export const gradients = {
+  container: ["#3B82F6", "#2563EB"],
+  levelCard: ["#fcd34d", "#fbbf24"],
+  scoreBox: ["#34d399", "#10b981"],
+  resultCard: ["#e0f2fe", "#bae6fd"],
+};
 
 export const styles = StyleSheet.create({
   container: {
@@ -26,41 +26,6 @@ export const styles = StyleSheet.create({
     color: "#ffffff",
     textTransform: "uppercase",
     letterSpacing: 1,
-  },
-  levelCard: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  levelCardInner: {
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 16,
-  },
-  levelLabel: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#92400e",
-  },
-  scoreContainer: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  scoreBox: {
-    paddingVertical: 20,
-    paddingHorizontal: 28,
-    borderRadius: 16,
-    alignItems: "center",
-  },
-  scoreLabel: {
-    fontSize: 18,
-    color: "#065f46",
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  scoreValue: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#065f46",
   },
   resultList: {
     marginTop: 10,
@@ -120,7 +85,6 @@ export const styles = StyleSheet.create({
     borderColor: "#ef4444",
     borderWidth: 2,
   },
-  
 });
 
 // Helper function for AntDesign icon props

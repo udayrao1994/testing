@@ -1,11 +1,4 @@
-// features/LeaderboardScreen/LeaderboardScreen.styles.js
-
 import { StyleSheet, Platform } from 'react-native';
-
-export const gradients = {
-  container: ['#3B82F6', '#2563EB'], // Background
-  card: ['#e0f2fe', '#bae6fd'],     // Card background
-};
 
 export const styles = StyleSheet.create({
   container: {
@@ -29,35 +22,5 @@ export const styles = StyleSheet.create({
   },
   cardWrapper: {
     marginBottom: 16,
-  },
-  levelCard: {
-    flexDirection: 'row',
-    borderRadius: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 6,
-  },
-  levelInfo: {
-    flex: 1,
-  },
-  levelText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1d4ed8',
-  },
-  scoreInfo: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  scoreText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#f97316',
   },
 });

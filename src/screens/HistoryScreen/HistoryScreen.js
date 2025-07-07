@@ -1,17 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { styles, gradients, getIconStyle } from "./HistoryScreen.styles";
-import theme from '../../theme/theme';
+import theme from "../../theme/theme";
+import ScoreCard from "../../components/ScoreCard/ScoreCard";
+
 export default function HistoryScreen({ route }) {
   const navigation = useNavigation();
   const { questions, answers, level } = route.params;
@@ -43,33 +41,13 @@ export default function HistoryScreen({ route }) {
   };
 
   return (
-
-
     <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
-    
-    
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <Animatable.View animation="fadeInDown" delay={100} style={styles.header}>
           <Text style={styles.headerText}>📊 Quiz Summary</Text>
         </Animatable.View>
 
-        <Animatable.View animation="zoomIn" delay={200} style={styles.levelCard}>
-          <LinearGradient colors={gradients.levelCard} style={styles.levelCardInner}>
-            <Text style={styles.levelLabel}>LEVEL : {level}</Text>
-          </LinearGradient>
-        </Animatable.View>
-
-        <Animatable.View animation="zoomIn" delay={300} style={styles.scoreContainer}>
-          <LinearGradient colors={gradients.scoreBox} style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>Your Score</Text>
-            <Text style={styles.scoreValue}>
-              {score}/{questions.length}
-            </Text>
-          </LinearGradient>
-        </Animatable.View>
+        <ScoreCard level={level} score={score} total={questions.length} />
 
         <View style={styles.resultList}>
           {questions.map((q, idx) => {
@@ -91,7 +69,6 @@ export default function HistoryScreen({ route }) {
                     styles.resultCard,
                     correct ? styles.correctBorder : styles.incorrectBorder,
                   ]}
-                  
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.questionText}>

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Alert,
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './RegisterScreen.styles';
+import InputField from '../../components/InputField'; // Make sure this path matches your folder structure
 
 export default function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -56,28 +56,24 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Sign up now to get started</Text>
 
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Full Name"
             value={fullName}
             onChangeText={setFullName}
           />
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Email Address"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Alert,
   ScrollView,
@@ -10,6 +9,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from './LoginScreen.styles';
+import InputField from '../../components/InputField'; // Adjust path if needed
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -56,16 +56,13 @@ export default function LoginScreen() {
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Login to continue</Text>
 
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Email Address"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
-
-          <TextInput
-            style={styles.input}
+          <InputField
             placeholder="Password"
             value={password}
             onChangeText={setPassword}

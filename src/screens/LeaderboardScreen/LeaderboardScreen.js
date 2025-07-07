@@ -1,12 +1,11 @@
-// features/LeaderboardScreen/LeaderboardScreen.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-import { styles, gradients } from './LeaderboardScreen.styles';
+
+import { styles } from './LeaderboardScreen.styles';
 import { QuizRepository } from '../../data/repositories/QuizRepository';
 import theme from '../../theme/theme';
+import ScoreCard from '../../components/ScoreCard/ScoreCard';
 
 const repo = new QuizRepository();
 
@@ -40,7 +39,6 @@ export default function LeaderboardScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
-    
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -56,19 +54,7 @@ export default function LeaderboardScreen() {
             delay={index * 150}
             style={styles.cardWrapper}
           >
-            <LinearGradient
-              colors={gradients.card}
-              style={styles.levelCard}
-            >
-              <View style={styles.levelInfo}>
-                <Text style={styles.levelText}>Level {item.level}</Text>
-              </View>
-              <View style={styles.scoreInfo}>
-                <Text style={styles.scoreText}>
-                  Score: {item.score} / {item.total}
-                </Text>
-              </View>
-            </LinearGradient>
+            <ScoreCard level={item.level} score={item.score} total={item.total} />
           </Animatable.View>
         ))}
       </ScrollView>
