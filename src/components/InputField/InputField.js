@@ -6,6 +6,7 @@ const InputField = ({ placeholder, value, onChangeText, keyboardType, secureText
   return (
     <TextInput
       style={styles.input}
+      testID="emailInput" 
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}

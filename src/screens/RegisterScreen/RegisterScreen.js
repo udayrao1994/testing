@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './RegisterScreen.styles';
-import InputField from '../../components/InputField'; // Make sure this path matches your folder structure
+import InputField from '../../components/InputField/InputField'; 
 
 export default function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState('');

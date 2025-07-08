@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-
-import { styles } from './LeaderboardScreen.styles';
-import { QuizRepository } from '../../data/repositories/QuizRepository';
-import theme from '../../theme/theme';
-import ScoreCard from '../../components/ScoreCard/ScoreCard';
-
-const repo = new QuizRepository();
+import { styles, gradients } from './LeaderboardScreen.styles';
+import { quizRepository } from '../../data/repositories/repositoryProvider';
 
 export default function LeaderboardScreen() {
   const [levelScores, setLevelScores] = useState([]);
@@ -15,15 +11,18 @@ export default function LeaderboardScreen() {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const parsed = await repo.getHistory();
+        const parsed = await quizRepository.getQuizHistory();
+        if (!parsed || !Array.isArray(parsed)) return;
+
         const uniqueLevels = {};
 
         parsed.forEach(entry => {
+          const levelNum = Number(entry.level); // ensure numeric
           if (
-            !uniqueLevels[entry.level] ||
-            entry.score > uniqueLevels[entry.level].score
+            !uniqueLevels[levelNum] ||
+            entry.score > uniqueLevels[levelNum].score
           ) {
-            uniqueLevels[entry.level] = entry;
+            uniqueLevels[levelNum] = { ...entry, level: levelNum };
           }
         });
 
@@ -38,7 +37,7 @@ export default function LeaderboardScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
+    <LinearGradient colors={gradients.container} style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -47,17 +46,34 @@ export default function LeaderboardScreen() {
           <Text style={styles.headerText}>🏆 Leaderboard</Text>
         </Animatable.View>
 
-        {levelScores.map((item, index) => (
-          <Animatable.View
-            key={index}
-            animation="fadeInUp"
-            delay={index * 150}
-            style={styles.cardWrapper}
-          >
-            <ScoreCard level={item.level} score={item.score} total={item.total} />
-          </Animatable.View>
-        ))}
+        {levelScores.length === 0 ? (
+          <Text style={styles.noDataText}>No scores available yet.</Text>
+        ) : (
+          levelScores.map((item, index) => (
+            <Animatable.View
+              key={index}
+              animation="fadeInUp"
+              delay={index * 150}
+              style={styles.cardWrapper}
+            >
+              <LinearGradient
+                colors={gradients.card}
+                style={styles.levelCard}
+              >
+                <View style={styles.levelInfo}>
+                  <Text style={styles.levelText}>Level {item.length}</Text>
+                </View>
+                <View style={styles.scoreInfo}>
+                  <Text style={styles.scoreText}>
+                    Score: {item.score} / {item.questions.length}
+                    {console.log(item)}
+                  </Text>
+                </View>
+              </LinearGradient>
+            </Animatable.View>
+          ))
+        )}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }

@@ -10,11 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import styles, { gradientOrange } from "./HomeScreen.styles";
-import { QuizRepository } from "../../data/repositories/QuizRepository";
-import theme from '../../theme/theme';
-
-
-const repo = new QuizRepository();
+import { quizRepository } from "../../data/repositories/repositoryProvider";
+import theme from "../../theme/theme";
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
@@ -57,12 +54,31 @@ export default function HomeScreen({ route }) {
 
   const handleSubmit = async () => {
     if (!input.trim()) return;
-    const updatedAnswers = [...answers, { questionIndex: currentIndex, userAnswer: input.trim() }];
+    const updatedAnswers = [
+      ...answers,
+      { questionIndex: currentIndex, userAnswer: input.trim() },
+    ];
     setAnswers(updatedAnswers);
     setInput("");
 
     if (currentIndex === questions.length - 1) {
-      await repo.unlockLevelIfNeeded(level);
+      const correctCount = updatedAnswers.reduce((acc, ans) => {
+        const q = questions[ans.questionIndex];
+        return acc + (q.answer === ans.userAnswer ? 1 : 0);
+      }, 0);
+
+      const resultData = {
+        level,
+        answers: updatedAnswers,
+        questions,
+        score: correctCount,
+        playedAt: new Date().toISOString(),
+      };
+
+      await quizRepository.saveQuizHistory(resultData);
+
+      await quizRepository.unlockLevelIfNeeded(level);
+        console.log(resultData)
       navigation.navigate("History", {
         answers: updatedAnswers,
         questions,
@@ -75,12 +91,30 @@ export default function HomeScreen({ route }) {
   };
 
   const handleSkip = async () => {
-    const updatedAnswers = [...answers, { questionIndex: currentIndex, userAnswer: null }];
+    const updatedAnswers = [
+      ...answers,
+      { questionIndex: currentIndex, userAnswer: null },
+    ];
     setAnswers(updatedAnswers);
     setInput("");
 
     if (currentIndex === questions.length - 1) {
-      await repo.unlockLevelIfNeeded(level);
+      const correctCount = updatedAnswers.reduce((acc, ans) => {
+        const q = questions[ans.questionIndex];
+        return acc + (q.answer === ans.userAnswer ? 1 : 0);
+      }, 0);
+
+      const resultData = {
+        level,
+        answers: updatedAnswers,
+        questions,
+        score: correctCount,
+        playedAt: new Date().toISOString(),
+      };
+
+      await quizRepository.saveQuizHistory(resultData);
+      await quizRepository.unlockLevelIfNeeded(level);
+
       navigation.navigate("History", {
         answers: updatedAnswers,
         questions,
@@ -110,14 +144,15 @@ export default function HomeScreen({ route }) {
 
   return (
     <View style={[styles.header, { backgroundColor: theme.colors.primaryBlue }]}>
-
       <LinearGradient colors={theme.colors.gradientBlue} style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.headerText}>Level: {level}</Text>
           <Text style={styles.headerText}>
             {currentIndex + 1}/{questions.length}
           </Text>
-          <Text style={styles.headerText}>⏳ {String(timeLeft).padStart(2, "0")}</Text>
+          <Text style={styles.headerText}>
+            ⏳ {String(timeLeft).padStart(2, "0")}
+          </Text>
         </View>
       </LinearGradient>
 
@@ -149,7 +184,10 @@ export default function HomeScreen({ route }) {
                 <Text style={styles.keypadText}>{n}</Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity onPress={handleBackspace} style={styles.backspaceButton}>
+            <TouchableOpacity
+              onPress={handleBackspace}
+              style={styles.backspaceButton}
+            >
               <Text style={styles.backspaceText}>⌫ Backspace</Text>
             </TouchableOpacity>
           </View>

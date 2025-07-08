@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from './LoginScreen.styles';
-import InputField from '../../components/InputField'; // Adjust path if needed
+import InputField from '../../components/InputField/InputField';
 
 export default function LoginScreen() {
   const navigation = useNavigation();

@@ -1,6 +1,6 @@
 // data/QuizData.js
 
-const QuizData =  [
+const levelData =  [
   {
     level: 1,
     questions: [
@@ -103,4 +103,4 @@ const QuizData =  [
   },
 ];
 
-export default QuizData;
+export default levelData;

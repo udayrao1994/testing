@@ -41,6 +41,5 @@ const styles = StyleSheet.create({
 
 export default styles;
 
-export const gradients = {
-  questionbox: ['#ECECFF', '#D6D6FF'],
-};
+export const questionbox = 
+   ['#ECECFF', '#D6D6FF'];

@@ -7,20 +7,18 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { QuizRepository } from '../../data/repositories/QuizRepository';
-import styles from './LevelScreen.styles';
+import { quizRepository } from '../../data/repositories/repositoryProvider';
+import styles, { questionbox } from './LevelScreen.styles';
 
 const LevelScreen = ({ navigation }) => {
-  const [unlockedLevel, setUnlockedLevel] = useState(1);
+  const [unlockedLevels, setUnlockedLevels] = useState([1]);
   const [cardSize, setCardSize] = useState(150);
   const [numColumns, setNumColumns] = useState(2);
   const [quizLevels, setQuizLevels] = useState([]);
 
-  // Handle responsive card layout
   useEffect(() => {
     const updateLayout = () => {
       const { width } = Dimensions.get('window');
@@ -35,28 +33,18 @@ const LevelScreen = ({ navigation }) => {
     };
 
     updateLayout();
-
     const subscription = Dimensions.addEventListener('change', updateLayout);
     return () => subscription?.remove();
   }, []);
 
-  // Load unlocked level and level data
   useEffect(() => {
     const loadData = async () => {
       try {
-        const savedLevel = await AsyncStorage.getItem('unlockedLevel');
-        if (savedLevel) {
-          setUnlockedLevel(Number(savedLevel));
-        }
+        const unlocked = await quizRepository.getUnlockedLevels();
+        setUnlockedLevels(unlocked);
 
-        const repo = new QuizRepository();
-        const data = await repo.getAllLevelsWithQuestions();
-console.log('Loaded quiz levels:', data); // ✅ Add this to debug
-setQuizLevels(data);
-
-
-        // const data = await repo.getAllLevelsWithQuestions();
-        // setQuizLevels(data);
+        const data = await quizRepository.getAllLevelsWithQuestions();
+        setQuizLevels(data);
       } catch (error) {
         console.error('Error loading level data:', error);
       }
@@ -69,15 +57,18 @@ setQuizLevels(data);
   }, [navigation]);
 
   const handleLevelPress = useCallback((questions, level) => {
-    if (level <= unlockedLevel) {
+    if (unlockedLevels.includes(level)) {
       navigation.navigate('Home', { questions, level });
     } else {
-      Alert.alert('Level Locked', `Level ${level} is locked. Complete previous levels to unlock it.`);
+      Alert.alert(
+        'Level Locked',
+        `Level ${level} is locked. Complete Level ${level - 1} to unlock it.`
+      );
     }
-  }, [unlockedLevel]);
+  }, [unlockedLevels]);
 
   const renderLevelCard = useCallback(({ item }) => {
-    const isLocked = item.level > unlockedLevel;
+    const isLocked = !unlockedLevels.includes(item.level);
 
     return (
       <Animatable.View
@@ -92,7 +83,7 @@ setQuizLevels(data);
           style={{ borderRadius: 20, overflow: 'hidden' }}
         >
           <LinearGradient
-            colors={['#ECECFF', '#D6D6FF']}
+            colors={questionbox}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -121,7 +112,7 @@ setQuizLevels(data);
         </TouchableOpacity>
       </Animatable.View>
     );
-  }, [unlockedLevel, handleLevelPress, cardSize]);
+  }, [unlockedLevels, handleLevelPress, cardSize]);
 
   return (
     <View style={styles.container}>
