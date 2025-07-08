@@ -57,19 +57,21 @@ export default function LoginScreen() {
           <Text style={styles.subtitle}>Login to continue</Text>
 
           <InputField
+            testID="emailInput"
             placeholder="Email Address"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
           <InputField
+            testID="passwordInput"
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity testID="loginButton" style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>LOGIN</Text>
           </TouchableOpacity>
 
@@ -86,6 +88,7 @@ export default function LoginScreen() {
           <Text style={styles.loginText}>
             Don't have an account?{' '}
             <Text
+              testID="registerLink"
               style={styles.loginLink}
               onPress={() => navigation.navigate('Register')}
             >

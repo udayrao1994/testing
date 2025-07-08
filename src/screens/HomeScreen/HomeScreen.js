@@ -15,7 +15,9 @@ import theme from "../../theme/theme";
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
-  const { questions, level } = route.params || {};
+  const questions = route?.params?.questions ?? [];
+const level = route?.params?.level ?? 1;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState("");
   const [answers, setAnswers] = useState([]);
@@ -76,9 +78,8 @@ export default function HomeScreen({ route }) {
       };
 
       await quizRepository.saveQuizHistory(resultData);
-
       await quizRepository.unlockLevelIfNeeded(level);
-        console.log(resultData)
+
       navigation.navigate("History", {
         answers: updatedAnswers,
         questions,
@@ -136,50 +137,55 @@ export default function HomeScreen({ route }) {
 
   if (!questions || questions.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No questions available.</Text>
+      <View style={styles.emptyContainer} testID="emptyContainer">
+        <Text style={styles.emptyText} testID="emptyText">No questions available.</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.header, { backgroundColor: theme.colors.primaryBlue }]}>
-      <LinearGradient colors={theme.colors.gradientBlue} style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.headerText}>Level: {level}</Text>
-          <Text style={styles.headerText}>
-            {currentIndex + 1}/{questions.length}
-          </Text>
-          <Text style={styles.headerText}>
-            ⏳ {String(timeLeft).padStart(2, "0")}
-          </Text>
+    <View
+      style={[styles.header, { backgroundColor: theme.colors.primaryBlue }]}
+      testID="homeScreenContainer"
+    >
+      <LinearGradient
+        colors={theme.colors.gradientBlue}
+        style={styles.header}
+        testID="headerGradient"
+      >
+        <View style={styles.headerContent} testID="headerContent">
+          <Text style={styles.headerText} testID="levelText">Level: {level}</Text>
+          <Text style={styles.headerText} testID="questionCounter">{currentIndex + 1}/{questions.length}</Text>
+          <Text style={styles.headerText} testID="timerText">⏳ {String(timeLeft).padStart(2, "0")}</Text>
         </View>
       </LinearGradient>
 
-      <View style={styles.progressContainer}>
+      <View style={styles.progressContainer} testID="progressContainer">
         <Animated.View
           style={[styles.progressBar, { width: progressInterpolate }]}
+          testID="progressBar"
         />
       </View>
 
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Animatable.View animation="fadeInUp" key={currentIndex}>
-          <View style={styles.questionBox}>
-            <Text style={styles.questionText}>{currentQ.question}</Text>
+      <ScrollView contentContainerStyle={styles.contentContainer} testID="contentContainer">
+        <Animatable.View animation="fadeInUp" key={currentIndex} testID={`question-${currentIndex}`}>
+          <View style={styles.questionBox} testID="questionBox">
+            <Text style={styles.questionText} testID="questionText">{currentQ.question}</Text>
           </View>
 
-          <Text style={styles.answerLabel}>✍️ Your Answer</Text>
+          <Text style={styles.answerLabel} testID="answerLabel">✍️ Your Answer</Text>
 
-          <View style={styles.inputBox}>
-            <Text style={styles.inputText}>{input || " "}</Text>
+          <View style={styles.inputBox} testID="inputBox">
+            <Text style={styles.inputText} testID="inputText">{input || " "}</Text>
           </View>
 
-          <View style={styles.keypadContainer}>
+          <View style={styles.keypadContainer} testID="keypadContainer">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n) => (
               <TouchableOpacity
                 key={n}
                 onPress={() => handleKeyPress(n.toString())}
                 style={styles.keypadButton}
+                testID={`keypad-${n}`}
               >
                 <Text style={styles.keypadText}>{n}</Text>
               </TouchableOpacity>
@@ -187,21 +193,26 @@ export default function HomeScreen({ route }) {
             <TouchableOpacity
               onPress={handleBackspace}
               style={styles.backspaceButton}
+              testID="keypad-backspace"
             >
               <Text style={styles.backspaceText}>⌫ Backspace</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.actionRow}>
+          <View style={styles.actionRow} testID="actionRow">
             <LinearGradient colors={gradientOrange} style={styles.actionButton}>
-              <TouchableOpacity onPress={handleSkip} style={styles.fullWidthCenter}>
+              <TouchableOpacity
+                onPress={handleSkip}
+                style={styles.fullWidthCenter}
+                testID="skipButton"
+              >
                 <Text style={styles.actionText}>Skip</Text>
               </TouchableOpacity>
             </LinearGradient>
 
-            <TouchableOpacity onPress={handleSubmit} style={styles.flexOne}>
+            <TouchableOpacity onPress={handleSubmit} style={styles.flexOne} testID="submitButtonWrapper">
               <LinearGradient colors={gradientOrange} style={styles.actionButton}>
-                <Text style={styles.actionText}>
+                <Text style={styles.actionText} testID="submitButtonText">
                   {currentIndex < questions.length - 1 ? "Save" : "Submit"}
                 </Text>
               </LinearGradient>
@@ -210,8 +221,8 @@ export default function HomeScreen({ route }) {
         </Animatable.View>
       </ScrollView>
 
-      <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={styles.backContainer} testID="backContainer">
+        <TouchableOpacity onPress={() => navigation.goBack()} testID="backButton">
           <LinearGradient colors={gradientOrange} style={styles.backButton}>
             <Text style={styles.backText}>⬅ Back to Levels</Text>
           </LinearGradient>

@@ -10,7 +10,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import styles from './OnboardingScreen.styles';
 import theme from '../../theme/theme';
 
-
 const { width } = Dimensions.get('window');
 const welcomeLogo = require('../../../assets/tiny-people-sitting-standing-near-giant-faq.png');
 
@@ -50,14 +49,13 @@ const OnboardingScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
-    
       <View style={styles.header}>
         <Image source={welcomeLogo} style={styles.image} />
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>{current.title}</Text>
-        <Text style={styles.description}>{current.description}</Text>
+        <Text style={styles.title} testID="onboardingTitle">{current.title}</Text>
+        <Text style={styles.description} testID="onboardingDescription">{current.description}</Text>
 
         <View style={styles.dots}>
           {onboardingSlides.map((_, index) => (
@@ -73,14 +71,22 @@ const OnboardingScreen = ({ navigation }) => {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleNext}
+          testID="nextButton"
+        >
           <Text style={styles.primaryButtonText}>
             {currentSlide === onboardingSlides.length - 1 ? 'Get Started' : 'Next'}
           </Text>
         </TouchableOpacity>
 
         {currentSlide > 0 && (
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleBack}>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={handleBack}
+            testID="backButton"
+          >
             <Text style={styles.secondaryButtonText}>Back</Text>
           </TouchableOpacity>
         )}

@@ -2,11 +2,14 @@ import React from 'react';
 import { TextInput } from 'react-native';
 import { styles } from './InputField.styles';
 
-const InputField = ({ placeholder, value, onChangeText, keyboardType, secureTextEntry }) => {
+const InputField = ({ placeholder,testID, value, onChangeText, keyboardType, secureTextEntry }) => {
   return (
-    <TextInput
+    <TextInput  
+    testID={testID} 
+    accessibilityLabel={testID} 
+    data-testid={testID}
       style={styles.input}
-      testID="emailInput" 
+      
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}

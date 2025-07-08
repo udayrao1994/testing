@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './RegisterScreen.styles';
-import InputField from '../../components/InputField/InputField'; 
+import InputField from '../../components/InputField/InputField';
 
 export default function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -57,36 +57,45 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.subtitle}>Sign up now to get started</Text>
 
           <InputField
+            testID="fullNameInput"
             placeholder="Full Name"
             value={fullName}
             onChangeText={setFullName}
           />
           <InputField
+            testID="emailInput"
             placeholder="Email Address"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
           <InputField
+            testID="passwordInput"
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
           <InputField
+            testID="confirmPasswordInput"
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <TouchableOpacity
+            testID="signupButton"
+            style={styles.button}
+            onPress={handleRegister}
+          >
             <Text style={styles.buttonText}>SIGN UP</Text>
           </TouchableOpacity>
 
           <Text style={styles.loginText}>
             Already have an account?{' '}
             <Text
+              testID="loginLink"
               style={styles.loginLink}
               onPress={() => navigation.navigate('Login')}
             >

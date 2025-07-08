@@ -75,12 +75,14 @@ const LevelScreen = ({ navigation }) => {
         animation="zoomIn"
         delay={item.level * 100}
         style={{ width: cardSize, marginBottom: 20 }}
+        testID={`levelCard-${item.level}`}
       >
         <TouchableOpacity
           onPress={() => handleLevelPress(item.questions, item.level)}
           disabled={isLocked}
           activeOpacity={0.8}
           style={{ borderRadius: 20, overflow: 'hidden' }}
+          testID={`levelButton-${item.level}`}
         >
           <LinearGradient
             colors={questionbox}
@@ -102,12 +104,12 @@ const LevelScreen = ({ navigation }) => {
           >
             <View style={styles.iconWrapper}>
               {isLocked ? (
-                <Ionicons name="lock-closed" size={28} color="#2563eb" />
+                <Ionicons name="lock-closed" size={28} color="#2563eb" testID={`lockIcon-${item.level}`} />
               ) : (
-                <Text style={styles.iconText}>{item.level}</Text>
+                <Text style={styles.iconText} testID={`levelNumber-${item.level}`}>{item.level}</Text>
               )}
             </View>
-            <Text style={styles.levelText}>Level {item.level}</Text>
+            <Text style={styles.levelText} testID={`levelLabel-${item.level}`}>Level {item.level}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </Animatable.View>
@@ -115,12 +117,13 @@ const LevelScreen = ({ navigation }) => {
   }, [unlockedLevels, handleLevelPress, cardSize]);
 
   return (
-    <View style={styles.container}>
-      <Animatable.Text animation="fadeInDown" style={styles.title}>
+    <View style={styles.container} testID="levelScreenContainer">
+      <Animatable.Text animation="fadeInDown" style={styles.title} testID="levelScreenTitle">
         🎯 Select Your Level
       </Animatable.Text>
 
       <FlatList
+        key={`columns-${numColumns}`} // ✅ Fix to avoid crash when numColumns changes
         data={quizLevels}
         keyExtractor={(item) => item.level.toString()}
         renderItem={renderLevelCard}
@@ -128,6 +131,7 @@ const LevelScreen = ({ navigation }) => {
         columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 20 }}
         contentContainerStyle={{ paddingBottom: 50 }}
         showsVerticalScrollIndicator={false}
+        testID="levelList"
       />
     </View>
   );
