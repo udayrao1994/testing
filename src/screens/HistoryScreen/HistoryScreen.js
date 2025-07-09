@@ -1,5 +1,10 @@
-import React, { useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,38 +17,88 @@ import ScoreCard from "../../components/ScoreCard/ScoreCard";
 
 export default function HistoryScreen({ route }) {
   const navigation = useNavigation();
-  const { questions, answers, level } = route.params;
+  const { level, from } = route.params || {};
+
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadQuizData = async () => {
+      try {
+        const data = await AsyncStorage.getItem("lastQuizData");
+        if (data) {
+          const parsed = JSON.parse(data);
+          setQuestions(parsed.questions || []);
+          setAnswers(parsed.answers || []);
+        }
+      } catch (err) {
+        console.log("Error loading last quiz data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadQuizData();
+  }, []);
+
+  useEffect(() => {
+    if (questions.length && answers.length) {
+      const saveScore = async () => {
+        try {
+          const existing = await AsyncStorage.getItem("quizHistory");
+          const parsed = existing ? JSON.parse(existing) : [];
+          const score = answers.filter((a) => {
+            const q = questions[a.questionIndex];
+            return q && a.userAnswer === q.answer;
+          }).length;
+          const updated = [...parsed, { level, score, total: questions.length }];
+          await AsyncStorage.setItem("quizHistory", JSON.stringify(updated));
+        } catch (err) {
+          console.log("Error saving score:", err);
+        }
+      };
+      saveScore();
+    }
+  }, [questions, answers]);
+
+  const handleRetry = () => {
+    if (from === "Home") {
+      navigation.navigate("Home", { level });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Levels" }],
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.headerText}>Loading summary...</Text>
+      </View>
+    );
+  }
 
   const score = answers.filter((a) => {
     const q = questions[a.questionIndex];
     return q && a.userAnswer === q.answer;
   }).length;
 
-  useEffect(() => {
-    const saveScore = async () => {
-      try {
-        const existing = await AsyncStorage.getItem("quizHistory");
-        const parsed = existing ? JSON.parse(existing) : [];
-        const updated = [...parsed, { level, score, total: questions.length }];
-        await AsyncStorage.setItem("quizHistory", JSON.stringify(updated));
-      } catch (err) {
-        console.log("Error saving score:", err);
-      }
-    };
-    saveScore();
-  }, []);
-
-  const handleRetry = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Levels" }],
-    });
-  };
-
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        <Animatable.View animation="fadeInDown" delay={100} style={styles.header}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.primaryBlue }]}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animatable.View
+          animation="fadeInDown"
+          delay={100}
+          style={styles.header}
+        >
           <Text style={styles.headerText}>📊 Quiz Summary</Text>
         </Animatable.View>
 

@@ -56,9 +56,9 @@ const LevelScreen = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const handleLevelPress = useCallback((questions, level) => {
+  const handleLevelPress = useCallback((level) => {
     if (unlockedLevels.includes(level)) {
-      navigation.navigate('Home', { questions, level });
+      navigation.navigate('Home', { level });
     } else {
       Alert.alert(
         'Level Locked',
@@ -74,42 +74,39 @@ const LevelScreen = ({ navigation }) => {
       <Animatable.View
         animation="zoomIn"
         delay={item.level * 100}
-        style={{ width: cardSize, marginBottom: 20 }}
+        style={[styles.cardWrapper, { width: cardSize }]}
         testID={`levelCard-${item.level}`}
       >
         <TouchableOpacity
-          onPress={() => handleLevelPress(item.questions, item.level)}
+          onPress={() => handleLevelPress(item.level)}
           disabled={isLocked}
           activeOpacity={0.8}
-          style={{ borderRadius: 20, overflow: 'hidden' }}
+          style={styles.buttonWrapper}
           testID={`levelButton-${item.level}`}
         >
           <LinearGradient
             colors={questionbox}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{
-              borderRadius: 20,
-              height: cardSize,
-              padding: 22,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              shadowColor: '#000',
-              shadowOpacity: 0.2,
-              shadowOffset: { width: 0, height: 3 },
-              shadowRadius: 6,
-              elevation: 5,
-            }}
+            style={[styles.gradientBackground, { height: cardSize }]}
           >
             <View style={styles.iconWrapper}>
               {isLocked ? (
-                <Ionicons name="lock-closed" size={28} color="#2563eb" testID={`lockIcon-${item.level}`} />
+                <Ionicons
+                name="lock-closed"
+                testID={`lockIcon-${item.level}`}
+                style={styles.iconProps}
+              />
+              
               ) : (
-                <Text style={styles.iconText} testID={`levelNumber-${item.level}`}>{item.level}</Text>
+                <Text style={styles.iconText} testID={`levelNumber-${item.level}`}>
+                  {item.level}
+                </Text>
               )}
             </View>
-            <Text style={styles.levelText} testID={`levelLabel-${item.level}`}>Level {item.level}</Text>
+            <Text style={styles.levelText} testID={`levelLabel-${item.level}`}>
+              Level {item.level}
+            </Text>
           </LinearGradient>
         </TouchableOpacity>
       </Animatable.View>
@@ -123,13 +120,13 @@ const LevelScreen = ({ navigation }) => {
       </Animatable.Text>
 
       <FlatList
-        key={`columns-${numColumns}`} // ✅ Fix to avoid crash when numColumns changes
+        key={`columns-${numColumns}`}
         data={quizLevels}
         keyExtractor={(item) => item.level.toString()}
         renderItem={renderLevelCard}
         numColumns={numColumns}
-        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 20 }}
-        contentContainerStyle={{ paddingBottom: 50 }}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         testID="levelList"
       />

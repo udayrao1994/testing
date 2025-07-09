@@ -15,7 +15,7 @@ export default function LeaderboardScreen() {
         if (!parsed || !Array.isArray(parsed)) return;
 
         const uniqueLevels = {};
-
+        console.log("k",parsed)
         parsed.forEach(entry => {
           const levelNum = Number(entry.level); // ensure numeric
           if (
@@ -61,11 +61,12 @@ export default function LeaderboardScreen() {
                 style={styles.levelCard}
               >
                 <View style={styles.levelInfo}>
-                  <Text style={styles.levelText}>Level {item.length}</Text>
+                  <Text style={styles.levelText}>Level {item.level}</Text>
                 </View>
                 <View style={styles.scoreInfo}>
                   <Text style={styles.scoreText}>
-                    Score: {item.score} / {item.questions.length}
+                  Score: {item.score} / {item.questions?.length ?? 'N/A'}
+
                     {console.log(item)}
                   </Text>
                 </View>

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+
+import { test, expect } from './setup/global-test'
 
 test.describe("Register", () => {
   test('should register a new user and redirect to login screen', async ({ page }) => {

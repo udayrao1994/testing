@@ -1,4 +1,7 @@
-import { test, expect } from '@playwright/test';
+
+
+import { test, expect } from './setup/global-test'
+
 
 test.describe('Login Screen', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,17 +17,5 @@ test.describe('Login Screen', () => {
     // Click login button
     await page.getByTestId('loginButton').click();
 
-  });
-
-  test.afterEach(async ({ page }, testInfo) => {
-    if (testInfo.status !== testInfo.expectedStatus) {
-      const screenshotPath = `screenshots/${testInfo.title.replace(/\s+/g, '_')}.png`;
-      await page.screenshot({ path: screenshotPath, fullPage: true });
-      testInfo.attachments.push({
-        name: 'screenshot',
-        path: screenshotPath,
-        contentType: 'image/png',
-      });
-    }
   });
 });

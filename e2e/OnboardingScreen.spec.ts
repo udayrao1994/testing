@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+
+import { test, expect } from './setup/global-test'
 
 test.describe('Onboarding Screen', () => {
   test.beforeEach(async ({ page }) => {

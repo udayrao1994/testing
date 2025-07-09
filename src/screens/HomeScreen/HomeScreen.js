@@ -12,19 +12,38 @@ import { LinearGradient } from "expo-linear-gradient";
 import styles, { gradientOrange } from "./HomeScreen.styles";
 import { quizRepository } from "../../data/repositories/repositoryProvider";
 import theme from "../../theme/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
-  const questions = route?.params?.questions ?? [];
-const level = route?.params?.level ?? 1;
+  const level = route?.params?.level ?? 1;
 
+  const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState("");
   const [answers, setAnswers] = useState([]);
-  const progress = useRef(new Animated.Value(0)).current;
   const [timeLeft, setTimeLeft] = useState(10);
 
+  const progress = useRef(new Animated.Value(0)).current;
   const currentQ = questions?.[currentIndex];
+
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        const allLevels = await quizRepository.getAllLevelsWithQuestions();
+        const levelData = allLevels.find((l) => l.level === level);
+        if (levelData?.questions) {
+          setQuestions(levelData.questions);
+        } else {
+          console.warn(`No questions found for level ${level}`);
+        }
+      } catch (error) {
+        console.error("Failed to load questions for level:", level, error);
+      }
+    };
+
+    loadQuestions();
+  }, [level]);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -80,12 +99,12 @@ const level = route?.params?.level ?? 1;
       await quizRepository.saveQuizHistory(resultData);
       await quizRepository.unlockLevelIfNeeded(level);
 
-      navigation.navigate("History", {
-        answers: updatedAnswers,
-        questions,
-        level,
-        restart,
-      });
+      await AsyncStorage.setItem(
+        "lastQuizData",
+        JSON.stringify({ questions, answers: updatedAnswers })
+      );
+
+      navigation.navigate("History", { level });
     } else {
       goNext();
     }
@@ -116,12 +135,12 @@ const level = route?.params?.level ?? 1;
       await quizRepository.saveQuizHistory(resultData);
       await quizRepository.unlockLevelIfNeeded(level);
 
-      navigation.navigate("History", {
-        answers: updatedAnswers,
-        questions,
-        level,
-        restart,
-      });
+      await AsyncStorage.setItem(
+        "lastQuizData",
+        JSON.stringify({ questions, answers: updatedAnswers })
+      );
+
+      navigation.navigate("History", { level });
     } else {
       goNext();
     }
